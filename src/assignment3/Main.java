@@ -112,11 +112,19 @@ public class Main {
 			//loops through dictionary to find words with 1 letter difference
 			for(String x : dict)
 			{	
-				if(found==true){return;}
+				if(found==true){
+					return;
+				}
 				if (!hist.contains(x))
 				{
 					int diff = 0;
 					char[] second = x.toCharArray();
+					
+					if(curr.equals("GUMMY") && x.equals("RUMMY"))
+					{
+						diff = 0;
+					}
+					
 		/*			
 					if(x.equals("curr")|| x.equals("STARS")|| x.equals("SOARS")|| x.equals("SOAKS")|| x.equals("SOCKS")|| x.equals("COCKS")|| x.equals("CONKS")|| x.equals("CONES")|| x.equals("CONEY")|| x.equals("MONEY"))
 					{
@@ -136,7 +144,11 @@ public class Main {
 					if (diff == 1)
 					{
 						valid = true;
-						hist.add(curr);
+						
+						if(!hist.contains(curr))
+						{
+							hist.add(curr);
+						}
 						getDFShelper(x, end, dict, hist);
 					}
 				}
