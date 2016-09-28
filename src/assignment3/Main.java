@@ -89,17 +89,19 @@ public class Main {
 	}
 	
 	public static void getDFShelper(String curr, String end, Set<String> dict, ArrayList<String> hist) {
-			
+		
+		valid = false;
 		//checks to see if the current word is the end word
-		if(curr.equals(strt))
+/*		if(curr.equals(strt))
 		{
 			hist.add(curr);
-		}
+		} */
 		
 		if(curr.equals(end))
 		{
 			found = true;
-			//add to hist
+			hist.add(curr);
+			ans = hist;
 		}
 		
 		if(found==false)
@@ -109,39 +111,43 @@ public class Main {
 
 			//loops through dictionary to find words with 1 letter difference
 			for(String x : dict)
-			{
-				int diff = 0;
-				char[] second = x.toCharArray();
-	/*			
-				if(x.equals("curr")|| x.equals("STARS")|| x.equals("SOARS")|| x.equals("SOAKS")|| x.equals("SOCKS")|| x.equals("COCKS")|| x.equals("CONKS")|| x.equals("CONES")|| x.equals("CONEY")|| x.equals("MONEY"))
+			{	
+				if(found==true){return;}
+				if (!hist.contains(x))
 				{
-					diff = 0;
-				}
-	*/				
-				//comparing letters
-				for(int s = 0; s < second.length; s++)
-				{
-					if(first[s] != second[s])
+					int diff = 0;
+					char[] second = x.toCharArray();
+		/*			
+					if(x.equals("curr")|| x.equals("STARS")|| x.equals("SOARS")|| x.equals("SOAKS")|| x.equals("SOCKS")|| x.equals("COCKS")|| x.equals("CONKS")|| x.equals("CONES")|| x.equals("CONEY")|| x.equals("MONEY"))
 					{
-						diff = diff + 1;
+						diff = 0;
+					}
+		*/				
+					//comparing letters
+					for(int s = 0; s < second.length; s++)
+					{
+						if(first[s] != second[s])
+						{
+							diff = diff + 1;
+						}
+					}
+					
+					//returning valid word found
+					if (diff == 1)
+					{
+						valid = true;
+						hist.add(curr);
+						getDFShelper(x, end, dict, hist);
 					}
 				}
-				
-				//returning valid word found
-				if (diff == 1)
-				{
-					validBranch = true;
-					// return getDFShelper(x, end, dict, hist);
-				}
 			}
-			if(validBranch == false)
+			if(valid == false)
 			{
-				//remove from hist
+				hist.remove(curr);
+				//dict.remove(curr);
 			}
 		}
 	}
-	
-	
 	
     public static ArrayList<String> getWordLadderBFS(String curr, String end) {
 		
