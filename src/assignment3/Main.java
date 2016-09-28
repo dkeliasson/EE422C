@@ -19,30 +19,18 @@ import java.io.*;
 
 public class Main {
 	
-	// static variables and constants only here.
+	// static variables and constants only here
+	
 	
 	public static void main(String[] args) throws Exception {
 		
 		Scanner kb = new Scanner(System.in);	// input Scanner for commands
-//		PrintStream ps;	// output file
-		// If arguments are specified, read/write from/to files instead of Std IO.
-//		if (args.length != 0) {
-//			
-//			kb = new Scanner(new File(args[0]));
-//			ps = new PrintStream(new File(args[1]));
-//			System.setOut(ps);			// redirect output to ps
-//		} else {
-//			kb = new Scanner(System.in);// default from Stdin
-//			ps = System.out;			// default to Stdout
-//		}
 		
 		initialize();
 		ArrayList<String> parsed = parse(kb);
 		ArrayList<String> ladder_BFS = getWordLadderBFS(parsed.get(0), parsed.get(1));
 		printLadder(ladder_BFS);
-//		ArrayList<String> ladder_DFS = getWordLadderDFS(parsed.get(0), parsed.get(1));
-//		printLadder(ladder_DFS);
-		
+
 		
 		
 	// TODO methods to read in words, output ladder
@@ -53,7 +41,6 @@ public class Main {
 		// initialize your static variables or constants here.
 		// We will call this method before running our JUNIT tests.  So call it 
 		// only once at the start of main.
-		
 		
 	}
 	
@@ -84,7 +71,14 @@ public class Main {
 		
 	}
 	
-	
+	/**
+	 * This method uses the breadth first search algorithm to find the optimal solution to
+	 * finding a path between two words with each subsequent word have only one letter change
+	 * from the previous word.
+	 * @param start
+	 * @param end
+	 * @return ArrayList<String> ladder
+	 */
 	
     public static ArrayList<String> getWordLadderBFS(String start, String end) {
     	/* Convert start word to array list for adding to queue */
@@ -102,10 +96,6 @@ public class Main {
 			/* Deqeue first spot in queue and pull out last word in list */
 			ArrayList<String> ladder = BFS_words.remove();
 			String word = ladder.get(ladder.size() - 1);
-//			/* Make a copy to pull word from */
-//			ArrayList<String> ladder_copy = new ArrayList<String>();
-//			ladder_copy.addAll(ladder);
-//			String word = ladder_copy.remove(ladder.size() - 1);
 			
 			/* If word equals end word, return the ladder */
 			if(word.equals(end)){
@@ -173,11 +163,11 @@ public class Main {
 	
 	public static void printLadder(ArrayList<String> ladder) {
 		if(ladder.size() == 0){
-			System.out.println("no word ladder can be found between");
+			System.out.println("no word ladder can be found between ");
 		}
-		else if(ladder.size() <= 2){
-			System.out.println("go fuck yourself");
-		}
+//		else if(ladder.size() == 2){
+//			System.out.println("no word ladder can be found between " + ladder.get(0) + " and " + (ladder.get(ladder.size() - 1)));
+//		}
 		else{
 			System.out.println("a " + (ladder.size() - 2) + "-rung word ladder exists between " + ladder.get(0) + " and " + (ladder.get(ladder.size() - 1)));
 			for(int i = 0; i < ladder.size(); i++){
