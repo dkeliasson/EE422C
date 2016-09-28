@@ -19,128 +19,138 @@ import java.io.*;
 
 public class Main {
 	
-	// static variables and constants only here
-	
+	// static variables and constants only here.
+	static boolean found = false;
+	static boolean valid = false;
+	public static String strt;
+	public static String last;
+	public static ArrayList<String> ans = new ArrayList<String>();
 	
 	public static void main(String[] args) throws Exception {
 		
-		Scanner kb = new Scanner(System.in);	// input Scanner for commands
-		
+		Scanner kb;	// input Scanner for commands
+
+		// If arguments are specified, read/write from/to files instead of Std IO.
+		if (args.length != 0) {
+			kb = new Scanner(new File(args[0]));
+		} else {
+			kb = new Scanner(System.in);// default from Stdin
+		}
 		initialize();
 		ArrayList<String> parsed = parse(kb);
-		ArrayList<String> ladder_BFS = getWordLadderBFS(parsed.get(0), parsed.get(1));
-		printLadder(ladder_BFS);
-
+		strt = parsed.get(0);
+		last = parsed.get(1);
 		
+		ArrayList<String> dfs = getWordLadderDFS(strt, last);
+		printLadder(dfs);
 		
-	// TODO methods to read in words, output ladder
+//		ArrayList<String> bfs = getWordLadderBFS(strt, last);
+//		printLadder(bfs);
 	}
-	
 	
 	public static void initialize() {
 		// initialize your static variables or constants here.
 		// We will call this method before running our JUNIT tests.  So call it 
 		// only once at the start of main.
-		
 	}
 	
 	/**
 	 * @param keyboard Scanner connected to System.in
-	 * @return ArrayList of 2 Strings containing start word and end word. 
+	 * @return ArrayList of 2 Strings containing curr word and end word. 
 	 * If command is /quit, return empty ArrayList. 
 	 */
 	public static ArrayList<String> parse(Scanner keyboard) {
-		ArrayList<String> words= new ArrayList<String>();
-		String first_word = keyboard.next();
-		if(first_word.equalsIgnoreCase("/quit")){ return words; }
-		else{
-			words.add(first_word);
-			String second_word = keyboard.next();
-			words.add(second_word);
+		ArrayList<String> passed = new ArrayList<String>();
+		String first = keyboard.next();
+		
+		if(first.equals("/quit"))
+		{
+			return passed;
 		}
-		return words;
+		
+		passed.add(first);
+		String second = keyboard.next();
+		passed.add(second);
+		
+		return passed;
 	}
 	
-	public static ArrayList<String> getWordLadderDFS(String start, String end) {
+	public static ArrayList<String> getWordLadderDFS(String curr, String end) {
 		
 		// Returned list should be ordered start to end.  Include start and end.
 		// Return empty list if no ladder.
+
+		Set<String> dict = makeDictionary();
+		ArrayList<String> history = new ArrayList<String>();
 		
-		
-		return null;
-		
+		//modifies global ArrayList with recursion
+		getDFShelper(curr, end, dict, history);
+		return ans;
 	}
 	
-	/**
-	 * This method uses the breadth first search algorithm to find the optimal solution to
-	 * finding a path between two words with each subsequent word have only one letter change
-	 * from the previous word.
-	 * @param start
-	 * @param end
-	 * @return ArrayList<String> ladder
-	 */
-	
-    public static ArrayList<String> getWordLadderBFS(String start, String end) {
-    	/* Convert start word to array list for adding to queue */
-    	ArrayList<String> start_word = new ArrayList<String>();
-    	start_word.add(start);
-    	    	
-    	/* Create arraylist for dictionary */
-    	Set<String> dict = (makeDictionary());
-    	
-    	/* Create Linked List for word ladder and add start word */
-		Queue<ArrayList<String>> BFS_words = new LinkedList<ArrayList<String>>();
-		BFS_words.add(start_word);
+	public static void getDFShelper(String curr, String end, Set<String> dict, ArrayList<String> hist) {
+			
+		//checks to see if the current word is the end word
+		if(curr.equals(strt))
+		{
+			hist.add(curr);
+		}
 		
-		while(!BFS_words.isEmpty()){
-			/* Deqeue first spot in queue and pull out last word in list */
-			ArrayList<String> ladder = BFS_words.remove();
-			String word = ladder.get(ladder.size() - 1);
-			
-			/* If word equals end word, return the ladder */
-			if(word.equals(end)){
-				return ladder;
-			}
-			
-			/* Create array of characters for each word */
-			char[] letters = word.toCharArray();
-			
-			/* check for neighbors of word */
-			for(int i = 0; i < letters.length; i++){
-				/* traverse through alphabet */
-				for(char alpha = 'a'; alpha < 'z'; alpha++){
-					char hold_letter = letters[i];
-					if(letters[i] != alpha){
-						letters[i] = alpha;
+		if(curr.equals(end))
+		{
+			found = true;
+			//add to hist
+		}
+		
+		if(found==false)
+		{	
+			//convert word to char array 
+			char[] first  = curr.toCharArray();
+
+			//loops through dictionary to find words with 1 letter difference
+			for(String x : dict)
+			{
+				int diff = 0;
+				char[] second = x.toCharArray();
+	/*			
+				if(x.equals("curr")|| x.equals("STARS")|| x.equals("SOARS")|| x.equals("SOAKS")|| x.equals("SOCKS")|| x.equals("COCKS")|| x.equals("CONKS")|| x.equals("CONES")|| x.equals("CONEY")|| x.equals("MONEY"))
+				{
+					diff = 0;
+				}
+	*/				
+				//comparing letters
+				for(int s = 0; s < second.length; s++)
+				{
+					if(first[s] != second[s])
+					{
+						diff = diff + 1;
 					}
-					
-					
-					/* Check to see if word is in Dictionary and not already in ladder */
-					String word_revision = new String(letters);
-					String new_word = word_revision.toUpperCase();
-					
-					if(dict.contains(new_word) && !ladder.contains(word_revision)){
-						/* make a copy of current ladder and add new word to end */
-						ArrayList<String> new_ladder = new ArrayList<String>();
-						new_ladder.addAll(ladder);
-						new_ladder.add(new_word.toLowerCase());
-						
-						/* Remove word from dictionary */
-						dict.remove(new_word);
-						
-						/* Add the new ladder to the end of the queue */
-						BFS_words.add(new_ladder);
-					}
-					letters[i] = hold_letter;
+				}
+				
+				//returning valid word found
+				if (diff == 1)
+				{
+					validBranch = true;
+					// return getDFShelper(x, end, dict, hist);
 				}
 			}
+			if(validBranch == false)
+			{
+				//remove from hist
+			}
 		}
-		/* No path found so return empty array */
-		ArrayList<String> empty_array = new ArrayList<String>();
-		return empty_array;
 	}
-    
-    
+	
+	
+	
+    public static ArrayList<String> getWordLadderBFS(String curr, String end) {
+		
+		// TODO some code
+		Set<String> dict = makeDictionary();
+		// TODO more code
+		
+		return null; // replace this line later with real return
+	}
     
 	public static Set<String>  makeDictionary () {
 		Set<String> words = new HashSet<String>();
@@ -158,43 +168,18 @@ public class Main {
 		return words;
 	}
 	
-	
-	
-	
 	public static void printLadder(ArrayList<String> ladder) {
+		
 		if(ladder.size() == 0){
-			System.out.println("no word ladder can be found between ");
+			System.out.println("no word ladder can be found between " + strt + " and " + last + ".");
 		}
-//		else if(ladder.size() == 2){
-//			System.out.println("no word ladder can be found between " + ladder.get(0) + " and " + (ladder.get(ladder.size() - 1)));
-//		}
 		else{
-			System.out.println("a " + (ladder.size() - 2) + "-rung word ladder exists between " + ladder.get(0) + " and " + (ladder.get(ladder.size() - 1)));
-			for(int i = 0; i < ladder.size(); i++){
-				System.out.println(ladder.get(i));
+			System.out.println("a " + (ladder.size()-2) + "-rung word ladder exists between " + ladder.get(0) + " and " + ladder.get(ladder.size()-1)+ ".");
+			for(String x : ladder)
+			{
+				System.out.println(x);
 			}
 		}
-	}
-	
-	
-	
-	// TODO
-	// Other private static methods here
-	
-	
-	public static void remove_nonNeighbors(ArrayList<String> neighbors){
-		/* Iterate through whole array and remove non neighbor words */
-		for(int i = neighbors.size() - 1; i > 0; i--){
-			int difference = 0;
-			/* Get two words that are next to each other for comparison */
-			String word1 = neighbors.get(i);
-			String word2 = neighbors.get(i-1);
-			for(int length = 0; length < word1.length(); length++){
-				if(word1.charAt(length) != word2.charAt(length)){
-					difference++;
-				}
-			}
-			if(difference != 1){ neighbors.remove(i-1); }
-		}
+		
 	}
 }
